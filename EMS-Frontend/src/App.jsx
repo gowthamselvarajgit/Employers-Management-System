@@ -28,6 +28,10 @@ const App = () => {
 
           //http://localhost:3000/employees/addNewEmployee
           <Route path="/add-employee" element={<EmployeeComponent />} />
+
+          //http://localhost:3000/update-employee/1
+          <Route path="/update-employee/:id" element={<EmployeeComponent />} />
+
         </Routes>
 
         <FooterComponent />

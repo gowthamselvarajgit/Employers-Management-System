@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Logo from "../assets/images/logo.png";
 import { useNavigate } from "react-router-dom";
-import { listEmployees } from "../Services/EmployeeService";
+import { listEmployees, deleteEmployee } from "../Services/EmployeeService";
 
 const ListOfEmployeeComponent = () => {
   const [Employees, setEmployees] = useState([]);
@@ -11,7 +11,29 @@ const ListOfEmployeeComponent = () => {
     navigate("/add-employee");
   }
 
+  function updateEmployee(id) {
+    navigate(`/update-employee/${id}`);
+  }
+
+  function removeEmployee(id) {
+    if (window.confirm("Are you sure you want to delete this employee?")) {
+      deleteEmployee(id)
+        .then((response) => {
+          console.log("Employee deleted successfully:", response.data);
+          alert("Employee deleted successfully!");
+          getAllEmployees(); // Refresh the employee list after deletion
+        })
+        .catch((error) => {
+          console.error("Error deleting employee:", error);
+          alert("Error deleting employee");
+        });
+    }
+  }
   useEffect(() => {
+    getAllEmployees();
+  }, []);
+
+  function getAllEmployees() {
     listEmployees()
       .then((response) => {
         setEmployees(response.data);
@@ -19,8 +41,7 @@ const ListOfEmployeeComponent = () => {
       .catch((error) => {
         console.error(error);
       });
-  }, []);
-
+  }
   return (
     <div className="flex flex-col justify-center items-center bg-gradient-to-b from-pink-100 to-white gap-6 px-4">
       <div className="flex flex-row justify-center items-center gap-2.5 mt-10">
@@ -46,6 +67,7 @@ const ListOfEmployeeComponent = () => {
               <th className="py-4 px-6 border-b border-white">First Name</th>
               <th className="py-4 px-6 border-b border-white">Last Name</th>
               <th className="py-4 px-6 border-b border-white">Email</th>
+              <th className="py-4 px-6 border-b border-white">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -65,6 +87,20 @@ const ListOfEmployeeComponent = () => {
                 </td>
                 <td className="py-3 px-6 font-medium text-gray-700 text-center">
                   {employee.email}
+                </td>
+                <td className="flex flex-row justify-center items-center gap-3 text-center">
+                  <button
+                    className="flex items-center justify-center px-4 py-2 rounded-2xl border-2 bg-pink-700 text-white font-bold cursor-pointer hover:border-pink-700 hover:bg-white hover:text-pink-700 hover:border-2 transition delay-100 ml-4"
+                    onClick={() => updateEmployee(employee.id)}
+                  >
+                    Update
+                  </button>
+                  <button
+                    className="flex items-center justify-center px-4 py-2 rounded-2xl border-2 bg-red-700 text-white font-bold cursor-pointer hover:border-red-700 hover:bg-white hover:text-red-700 hover:border-2 transition delay-100 mr-4"
+                    onClick={() => removeEmployee(employee.id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
